@@ -5,6 +5,12 @@ import { lusitana } from '@/app/ui/fonts';
 // import { fetchLatestInvoices,fetchCardData } from '../../lib/data';
 import { Suspense } from 'react';
 import { CardSkeleton, LatestInvoicesSkeleton, RevenueChartSkeleton } from '@/app/ui/skeletons';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Overview Page',
+  description: 'Shows summaries of recent revenues and invoices.',
+};
 
 export default function Page() {
 
