@@ -18,7 +18,7 @@ export default function SignupPage() {
           </div>
         </div>
         <Suspense>
-          <SignupForm mode="signUp"/>
+          <SignupForm/>
         </Suspense>
       </div>
     </main>

@@ -18,7 +18,7 @@ export default function LoginPage() {
           </div>
         </div>
         <Suspense>
-          <LoginForm mode="signIn"/>
+          <LoginForm/>
         </Suspense>
       </div>
     </main>
