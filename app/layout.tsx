@@ -7,8 +7,8 @@ export const metadata: Metadata = {
     template: '%s | Acme Dashboard',
     default: 'Acme Home Page',
   },
-
   description: 'The official Next.js Course Dashboard, built with App Router.',
+  metadataBase: new URL('https://next-learn-dashboard.vercel.sh')
 };
 
 export default function RootLayout({
