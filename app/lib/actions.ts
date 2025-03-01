@@ -4,9 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
 import { z } from 'zod';
-import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
+import { signIn } from '@/auth';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -48,7 +48,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
- 
+
   try{
     await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
@@ -105,25 +105,50 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
+export type authenticateState = {
+  message?: string,
+  email?: string,
+}
  
 export async function authenticate(
-  prevState: string | undefined,
+  prevState: authenticateState | undefined,
   formData: FormData,
 ) {
   try {
     await signIn('credentials', formData);
   } catch (error) {
+    const parseResult = z.string().email().safeParse(formData.get('email'));
+    if(!parseResult.success){
+      return {message: `Invalid email`}
+    }
+    const userEmail = parseResult.data;
+
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
-          return 'Invalid credentials.';
+          return {
+            message: 'Invalid credentials',
+            email: userEmail,
+          };
         default:
-          return 'Something went wrong.';
+          return {
+            message: `Valid credentials, but failed to authenticate`,
+            email: userEmail,
+          };
       }
     }
+
     throw error;
   }
 }
+
+export async function emailSignIn(formData: FormData) {
+  await signIn("resend", formData);
+}
+
+// export async function googleLogin(callbackURL:string){
+//   await signIn('google',{callbackURL})
+// }
 
 export type credState = {
   errors?: {
